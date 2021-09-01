@@ -77,6 +77,7 @@ function PokemonInfoFallback({name}) {
 }
 
 function PokemonDataView({pokemon}) {
+  console.log(pokemon)
   return (
     <div>
       <div className="pokemon-info__img-wrapper">

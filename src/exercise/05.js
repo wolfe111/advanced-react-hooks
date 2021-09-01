@@ -4,27 +4,43 @@
 import * as React from 'react'
 
 // 🐨 wrap this in a React.forwardRef and accept `ref` as the second argument
-function MessagesDisplay({messages}) {
+function MessagesDisplay({messages}, ref) {
   const containerRef = React.useRef()
+  const bananaRef = React.useRef()
+
+
+  console.log('ref', ref)
+  console.log('containerRef', containerRef)
+  console.log('bananaRef', bananaRef)
+
   React.useLayoutEffect(() => {
     scrollToBottom()
   })
 
   // 💰 you're gonna want this as part of your imperative methods
-  // function scrollToTop() {
-  //   containerRef.current.scrollTop = 0
-  // }
+  function scrollToTop() {
+    console.log(bananaRef.current.scrollToTop)
+    console.log(containerRef.current.scrollToTop)
+    containerRef.current.scrollTop = 0
+  }
   function scrollToBottom() {
     containerRef.current.scrollTop = containerRef.current.scrollHeight
   }
 
   // 🐨 call useImperativeHandle here with your ref and a callback function
   // that returns an object with scrollToTop and scrollToBottom
+  React.useImperativeHandle(ref, () => {
+    // returning these fuctions to the ref object so the parent in APP can call them 
+    return {
+      scrollToBottom: () => scrollToBottom(),
+      scrollToTop: () => scrollToTop()
+    }
+  })
 
   return (
     <div ref={containerRef} role="log">
       {messages.map((message, index, array) => (
-        <div key={message.id}>
+        <div ref={bananaRef} key={message.id}>
           <strong>{message.author}</strong>: <span>{message.content}</span>
           {array.length - 1 === index ? null : <hr />}
         </div>
@@ -32,6 +48,10 @@ function MessagesDisplay({messages}) {
     </div>
   )
 }
+
+// eslint-disable-next-line no-func-assign
+MessagesDisplay = React.forwardRef(MessagesDisplay)
+
 
 function App() {
   const messageDisplayRef = React.useRef()
